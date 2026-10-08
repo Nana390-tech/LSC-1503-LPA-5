@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HCT LSC 1503 - LPA 5</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #0c4a6e 0%, #0ea5e9 100%);
+        padding: 20px;
+        min-height: 100vh;
+        color: #1f2937;
+    }
+
+    .container {
+        max-width: 850px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+    }
+
+    .header {
+        background: linear-gradient(135deg, #0f172a 0%, #0284c7 100%);
+        color: white;
+        padding: 40px 30px;
+        text-align: center;
+    }
+
+    .header h1 {
+        font-size: 2em;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+
+    .header p {
+        font-size: 1.1em;
+        opacity: 0.95;
+    }
+
+    .content { padding: 40px 30px; }
+
+    .student-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .info-field.wide { grid-column: 1 / -1; }
+
+    .info-field label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #0f172a;
+        font-size: 0.95em;
+    }
+
+    .info-field input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 2px solid #bae6fd;
+        border-radius: 8px;
+        font-size: 1em;
+        font-family: inherit;
+        background: #f0f9ff;
+    }
+
+    .info-field input:focus,
+    textarea:focus {
+        outline: none;
+        border-color: #0ea5e9;
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.18);
+        background: white;
+    }
+
+    .instructions {
+        background: #f0f9ff;
+        border-left: 5px solid #0ea5e9;
+        border-radius: 8px;
+        padding: 20px 22px;
+        margin-bottom: 35px;
+    }
+
+    .instructions h2 {
+        color: #0f172a;
+        font-size: 1.15em;
+        margin-bottom: 10px;
+    }
+
+    .instructions p {
+        line-height: 1.65;
+        margin-bottom: 8px;
+    }
+
+    .instructions p:last-child { margin-bottom: 0; }
+
+    .question { margin-bottom: 32px; }
+
+    .question-text {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        font-weight: 600;
+        font-size: 1.08em;
+        line-height: 1.5;
+        margin-bottom: 8px;
+        color: #111827;
+    }
+
+    .question-number {
+        flex-shrink: 0;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #075985;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95em;
+    }
+
+    .question-hint {
+        margin: 0 0 12px 44px;
+        color: #6b7280;
+        font-style: italic;
+        font-size: 0.95em;
+        line-height: 1.5;
+    }
+
+    textarea {
+        width: 100%;
+        min-height: 120px;
+        padding: 12px 14px;
+        border: 2px solid #bae6fd;
+        border-radius: 8px;
+        font-size: 1em;
+        font-family: inherit;
+        line-height: 1.6;
+        resize: none;
+        overflow: hidden;
+        background: #fbfdff;
+    }
+
+    .q-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 8px;
+    }
+
+    .starter-btn {
+        background: none;
+        border: none;
+        color: #075985;
+        font-weight: 600;
+        font-size: 0.92em;
+        cursor: pointer;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        font-family: inherit;
+        padding: 2px 0;
+    }
+
+    .starter-btn:focus-visible {
+        outline: 2px solid #0ea5e9;
+        outline-offset: 2px;
+    }
+
+    .counter {
+        font-size: 0.88em;
+        color: #9ca3af;
+        font-weight: 600;
+    }
+
+    .counter.ok { color: #059669; }
+
+    .starters {
+        display: none;
+        margin-top: 10px;
+        padding: 12px 14px;
+        background: #eff6ff;
+        border-radius: 8px;
+        border: 1px dashed #7dd3fc;
+    }
+
+    .starters.open { display: block; }
+
+    .starters span {
+        display: block;
+        padding: 4px 0;
+        color: #0c4a6e;
+        line-height: 1.5;
+    }
+
+    .print-answer { display: none; }
+
+    .button-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 2px solid #e0f2fe;
+    }
+
+    .btn {
+        border: none;
+        border-radius: 8px;
+        padding: 13px 24px;
+        font-size: 1em;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn:focus-visible {
+        outline: 3px solid rgba(14, 165, 233, 0.45);
+        outline-offset: 2px;
+    }
+
+    .print-btn { background: linear-gradient(135deg, #0f172a 0%, #0284c7 100%); color: white; }
+    .save-btn { background: #075985; color: white; }
+    .load-btn { background: white; color: #075985; border: 2px solid #075985; }
+
+    .footer {
+        text-align: center;
+        padding: 18px;
+        background: #f0f9ff;
+        color: #0f172a;
+        font-size: 0.92em;
+        font-weight: 500;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .btn { transition: none; }
+        .btn:hover { transform: none; }
+    }
+
+    @media (max-width: 640px) {
+        body { padding: 10px; }
+        .student-info { grid-template-columns: 1fr; }
+        .header h1 { font-size: 1.5em; }
+        .content { padding: 25px 18px; }
+        .question-hint { margin-left: 0; }
+    }
+
+    @media print {
+        @page { margin: 15mm; }
+        body { background: white; padding: 0; }
+        .container { box-shadow: none; border-radius: 0; max-width: 100%; overflow: visible; }
+        .header {
+            background: #0f172a !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            padding: 24px;
+        }
+        .question-number {
+            background: #0f172a !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .button-container, .starter-btn, .starters, .counter, .q-footer { display: none !important; }
+        textarea { display: none !important; }
+
+        /* Long answers may continue onto the next page; keep each question heading with its answer */
+        .question { margin-bottom: 22px; break-inside: auto; page-break-inside: auto; }
+        .question-text, .question-hint { break-after: avoid; page-break-after: avoid; }
+
+        .print-answer {
+            display: block;
+            border-bottom: 1px solid #d1d5db;
+            padding: 8px 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.7;
+            orphans: 3;
+            widows: 3;
+        }
+
+        /* Empty answer: ruled lines for handwriting */
+        .print-answer.blank {
+            border-bottom: none;
+            min-height: 170px;
+            background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 33px, #cbd5e1 33px, #cbd5e1 34px);
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .info-field input { border: none; border-bottom: 1px solid #9ca3af; border-radius: 0; background: none; }
+        .instructions { background: none; }
+        .footer { background: none; }
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>HCT LSC 1503 &ndash; LPA 5</h1>
+        <p>Reflection: Preparing for My Interview Assessment</p>
+    </div>
+
+    <div class="content">
+        <div class="student-info">
+            <div class="info-field">
+                <label for="name">Student Name</label>
+                <input type="text" id="name" placeholder="Write your full name">
+            </div>
+            <div class="info-field">
+                <label for="id">Student ID</label>
+                <input type="text" id="id" placeholder="Write your ID number">
+            </div>
+            <div class="info-field">
+                <label for="section">Section</label>
+                <input type="text" id="section" placeholder="e.g. LSC 1503-01">
+            </div>
+            <div class="info-field">
+                <label for="date">Date</label>
+                <input type="date" id="date">
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h2>Before you start</h2>
+            <p>Your interview assessment is coming soon. To prepare, you worked through the interview apps, wrote and improved your scripts, practised with a partner, and had a mock interview with your teacher.</p>
+            <p>Now think about all of that preparation. Answer the questions below in <strong>complete sentences</strong>. Be honest about your experience &mdash; there are no right or wrong answers here. Aim for <strong>three to four sentences</strong> per question.</p>
+        </div>
+
+        <!-- Question 1 -->
+        <div class="question">
+            <div class="question-text">
+                <span class="question-number">1</span>
+                How did you write your scripts? Describe the steps you followed.
+            </div>
+            <p class="question-hint">Think about: where you got your ideas, which apps or notes you used, how you organised each answer, and how many times you changed it.</p>
+            <textarea id="q1" placeholder="Write your answer here..."></textarea>
+            <div class="print-answer" id="p1"></div>
+            <div class="q-footer">
+                <button class="starter-btn" data-target="s1">Need help starting?</button>
+                <span class="counter" id="c1">0 words</span>
+            </div>
+            <div class="starters" id="s1">
+                <span>First, I&hellip;. After that, I&hellip;</span>
+                <span>To find ideas for my answers, I used&hellip;</span>
+                <span>I changed my script&hellip; times because&hellip;</span>
+            </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="question">
+            <div class="question-text">
+                <span class="question-number">2</span>
+                Did you work with a partner while preparing? How did their feedback help you?
+            </div>
+            <p class="question-hint">Think about: what they told you to change, what they said you did well, and what you did differently after their feedback.</p>
+            <textarea id="q2" placeholder="Write your answer here..."></textarea>
+            <div class="print-answer" id="p2"></div>
+            <div class="q-footer">
+                <button class="starter-btn" data-target="s2">Need help starting?</button>
+                <span class="counter" id="c2">0 words</span>
+            </div>
+            <div class="starters" id="s2">
+                <span>I practised with&hellip;</span>
+                <span>My partner told me that I should&hellip;</span>
+                <span>After their feedback, I changed&hellip;</span>
+            </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="question">
+            <div class="question-text">
+                <span class="question-number">3</span>
+                What did you learn from your mock interview with your teacher? What feedback did you get?
+            </div>
+            <p class="question-hint">Think about: what went well, what surprised you, and the advice your teacher gave you.</p>
+            <textarea id="q3" placeholder="Write your answer here..."></textarea>
+            <div class="print-answer" id="p3"></div>
+            <div class="q-footer">
+                <button class="starter-btn" data-target="s3">Need help starting?</button>
+                <span class="counter" id="c3">0 words</span>
+            </div>
+            <div class="starters" id="s3">
+                <span>In my mock interview, I did well when&hellip;</span>
+                <span>My teacher advised me to&hellip;</span>
+                <span>I was surprised that&hellip;</span>
+            </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="question">
+            <div class="question-text">
+                <span class="question-number">4</span>
+                Which interview question are you most confident about, and which one still worries you? Explain why.
+            </div>
+            <p class="question-hint">Think about: &ldquo;Tell me about yourself,&rdquo; your study skills, describing yourself, your experiences, and your future plans.</p>
+            <textarea id="q4" placeholder="Write your answer here..."></textarea>
+            <div class="print-answer" id="p4"></div>
+            <div class="q-footer">
+                <button class="starter-btn" data-target="s4">Need help starting?</button>
+                <span class="counter" id="c4">0 words</span>
+            </div>
+            <div class="starters" id="s4">
+                <span>I feel most confident about&hellip; because&hellip;</span>
+                <span>The question that still worries me is&hellip;</span>
+                <span>This question is difficult for me because&hellip;</span>
+            </div>
+        </div>
+
+        <!-- Question 5 -->
+        <div class="question">
+            <div class="question-text">
+                <span class="question-number">5</span>
+                What have you learned about yourself as a speaker during this unit?
+            </div>
+            <p class="question-hint">Think about: your confidence, your body language, your preparation habits, and how you deal with nerves.</p>
+            <textarea id="q5" placeholder="Write your answer here..."></textarea>
+            <div class="print-answer" id="p5"></div>
+            <div class="q-footer">
+                <button class="starter-btn" data-target="s5">Need help starting?</button>
+                <span class="counter" id="c5">0 words</span>
+            </div>
+            <div class="starters" id="s5">
+                <span>I have learned that I am&hellip;</span>
+                <span>When I feel nervous, I&hellip;</span>
+                <span>At the start of this unit I&hellip;, but now I&hellip;</span>
+            </div>
+        </div>
+
+        <!-- Question 6 -->
+        <div class="question">
+            <div class="question-text">
+                <span class="question-number">6</span>
+                What will you do in the days before your interview to be fully ready?
+            </div>
+            <p class="question-hint">Think about: what you will practise, how many times, what you will bring, and how you will prepare on the morning of the exam.</p>
+            <textarea id="q6" placeholder="Write your answer here..."></textarea>
+            <div class="print-answer" id="p6"></div>
+            <div class="q-footer">
+                <button class="starter-btn" data-target="s6">Need help starting?</button>
+                <span class="counter" id="c6">0 words</span>
+            </div>
+            <div class="starters" id="s6">
+                <span>Before my interview, I will practise&hellip;</span>
+                <span>I will bring&hellip; with me.</span>
+                <span>On the morning of the exam, I will&hellip;</span>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <button class="btn print-btn" id="printBtn">Print or save as PDF</button>
+            <button class="btn save-btn" id="saveBtn">Save my answers</button>
+            <button class="btn load-btn" id="loadBtn">Open a saved file</button>
+            <input type="file" id="fileInput" accept=".json" hidden>
+        </div>
+    </div>
+
+    <div class="footer">Designed by: Nazila Motahari</div>
+</div>
+
+<script>
+(function () {
+    var infoFields = ['name', 'id', 'section', 'date'];
+    var questions = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6'];
+
+    function countWords(text) {
+        var t = text.trim();
+        return t === '' ? 0 : t.split(/\s+/).length;
+    }
+
+    function updateCounter(id) {
+        var box = document.getElementById(id);
+        var counter = document.getElementById('c' + id.slice(1));
+        var n = countWords(box.value);
+        counter.textContent = n + (n === 1 ? ' word' : ' words');
+        counter.classList.toggle('ok', n >= 40);
+    }
+
+    function autoGrow(box) {
+        box.style.height = 'auto';
+        box.style.height = Math.max(120, box.scrollHeight) + 'px';
+    }
+
+    function mirror(id) {
+        var box = document.getElementById(id);
+        var out = document.getElementById('p' + id.slice(1));
+        out.textContent = box.value;
+        out.classList.toggle('blank', box.value.trim() === '');
+    }
+
+    function refresh(id) {
+        updateCounter(id);
+        autoGrow(document.getElementById(id));
+        mirror(id);
+    }
+
+    function refreshAll() {
+        questions.forEach(refresh);
+    }
+
+    questions.forEach(function (id) {
+        var box = document.getElementById(id);
+        ['input', 'paste', 'cut', 'change'].forEach(function (evt) {
+            box.addEventListener(evt, function () {
+                // paste/cut change the value after the event fires
+                setTimeout(function () { refresh(id); }, 0);
+            });
+        });
+    });
+
+    window.addEventListener('resize', function () {
+        questions.forEach(function (id) { autoGrow(document.getElementById(id)); });
+    });
+
+    window.addEventListener('beforeprint', refreshAll);
+
+    /* Sentence starters */
+    document.querySelectorAll('.starter-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var panel = document.getElementById(btn.dataset.target);
+            var open = panel.classList.toggle('open');
+            btn.textContent = open ? 'Hide the sentence starters' : 'Need help starting?';
+        });
+    });
+
+    /* Print */
+    document.getElementById('printBtn').addEventListener('click', function () {
+        refreshAll();
+        window.print();
+    });
+
+    /* Save */
+    document.getElementById('saveBtn').addEventListener('click', function () {
+        var data = { form: 'LPA 5', saved: new Date().toISOString() };
+        infoFields.concat(questions).forEach(function (f) {
+            data[f] = document.getElementById(f).value;
+        });
+        var name = (data.name || 'student').trim().replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || 'student';
+        var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'LPA-5-' + name + '.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    });
+
+    /* Load */
+    var fileInput = document.getElementById('fileInput');
+    document.getElementById('loadBtn').addEventListener('click', function () { fileInput.click(); });
+
+    fileInput.addEventListener('change', function (e) {
+        var file = e.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function () {
+            try {
+                var data = JSON.parse(reader.result);
+                if (data.form && data.form !== 'LPA 5') {
+                    alert('This file is from ' + data.form + ', not LPA 5. Choose your LPA 5 file.');
+                    return;
+                }
+                infoFields.concat(questions).forEach(function (f) {
+                    if (typeof data[f] === 'string') document.getElementById(f).value = data[f];
+                });
+                refreshAll();
+            } catch (err) {
+                alert('This file could not be opened. Choose a file you saved from this form.');
+            }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+    });
+
+    refreshAll();
+})();
+</script>
+</body>
+</html>
